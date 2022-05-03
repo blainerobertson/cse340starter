@@ -1,0 +1,68 @@
+version: '3.8'
+services:
+  postgres:
+    container_name: postgres
+    # the bullseye version is a light weight version
+    image: postgres:14.2-bullseye
+    # the environment values are in the .env file
+    # this is for local development only
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PW}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+    # maps the local and container ports
+      - "5432:5432"
+    restart: always
+    volumes:
+    # a docker volume is a shared space between
+    # the local computer and the container
+    # so data can be shared and persist
+      - ./db-data:/var/lib/postgresql/data 
+      - ./sql/database-seed.sql:/docker-entrypoint-initdb.d/database-seed.sql
+      # The db-data folder is copied in the working directory
+      # of our computer so our data is persistent
+      # If needing to rebuild the DB completely, delete the
+      # db-data folder first, then rebuild
+
+  pgadmin:
+    container_name: pgadmin
+    # pgadmin is a DB management tool for PostgreSQL
+    # somewhat akin to MySQL Workbench or PHPMyAdmin
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PW}
+    ports:
+      - "5050:80"
+    restart: always
+    depends_on:
+      - postgres
+      # PostgreSQL pgAdmin panel accessible at http://localhost:5050/
+
+  app:
+    build: .
+    depends_on:
+      # Our app does not work without our database
+      # so this ensures the database loads first
+      - postgres
+    # maps the local port to the container port
+    ports:
+      - "5500:5500"
+    volumes:
+      # Maps our current project directory `.` to
+      # our working directory in the container (/app)
+      - ./:/app
+      # node_modules workaround for volumes
+      # https://stackoverflow.com/a/32785014
+      - /app/node_modules    
+    environment:
+      - WAIT_HOSTS=postgres:5432
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_HOSTS_INTERVAL=30
+      - WAIT_HOSTS_CONNECT_TIMOUT=30
+    # these wait commands allow the postgress server to 
+    # fully start, then the admin tool to connect, then
+    # the app to query the DB to build the welcome page
+    
