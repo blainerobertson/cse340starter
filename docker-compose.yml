@@ -25,6 +25,8 @@ services:
       # of our computer so our data is persistent
       # If needing to rebuild the DB completely, delete the
       # db-data folder first, then rebuild
+    # meant to solve an error with postgres statistics
+    command: postgres -c stats_temp_directory=/tmp
 
   pgadmin:
     container_name: pgadmin
