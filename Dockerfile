@@ -19,13 +19,5 @@ RUN npm install
 # Make port 5500 available in the container
 EXPOSE 5500
 
-# The Wait tool allows the DB server to start and be
-# fully ready before the app attempts connecting
-# SEE https://github.com/ufoscout/docker-compose-wait
-ENV WAIT_VERSION 2.7.2
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait /wait
-RUN chmod +x /wait
-
-# After the wait has executed, the app is run in 
-# dev (development) mode. See package.json for dev script.
-CMD /wait && npm run dev
+# The app is run in dev (development) mode. See package.json for dev script.
+CMD npm run dev
