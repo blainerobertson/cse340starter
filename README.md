@@ -1,139 +1,47 @@
 ## Getting Started
 
-This document is intended to get you started quickly in building a fullstack Node.js app complete with frontend, backend and PostgreSQL database.
-
-We will use Docker Compose to connect and network each container together so that they are easy to share among project contributors, and deploy to a hosting service when ready.
-
-### Advantages
-We want to make it easy to build and test an application with a copy of the database on the developers' local machine, without being required  to install the database software (in our case PostgreSQL) directly into the machine.
-
-If you follow this document, you will have a basic, working application running on your machine and querying a Postgres DB without the need to have either Node.js or Postgres installed directly into your machine. They will be installed into Docker containers and networked together. This should provide a "sandbox" to work inside of, thus adding a security separation between the application and your local machine during development. The only tool you will need to get started is Docker.
-
+This document is intended to get you started quickly in building a backend driven Node.js application complete with pages and content, backend logic and a PostgreSQL database for data storage.
 ## Prerequisites
 
-The only prerequisite software required to have installed at this point is a code editor - we will use VS Code (VSC) - and Docker.
+The only prerequisite software required to have installed at this point is Git for version control and a code editor - we will use VS Code (VSC).
 
-### Docker
+## Package Management
 
-How you install Docker will depend on the operating system you are running. Follow the installation instructions for your operating system:
+The foundation of the project development software is Node. While functional, Node depends on "packages" to add functionality to accomplish common tasks. This requires a package manager. Three common managers are NPM (Node Package Manager), YARN, and PNPM. While all do the same thing, they do it slightly differently. We will use PNPM for two reasons: 1) All packages are stored on your computer only once and then symlinks (system links) are created from the package to the project as needed, 2) performance is increased meaning that when the project builds, it does so faster.
+You will need to either install or activate PNPM before using it. See https://pnpm.io/
 
-To use this project you must have [Docker](https://www.docker.com/get-started) and Docker Desktop installed. Follow the directions for your operating system to install both tools:
-
-- Windows: [https://docs.docker.com/desktop/windows/install/]. Windows users typically will be using WSL2. Check out [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-manual#step-2---check-requirements-for-running-wsl-2) to make sure your machine will do so.
-- Mac & Linux: [https://docs.docker.com/desktop/mac/install/]
-
-When installing Docker, Docker Desktop should also be installed. It provides a nice GUI for working with Docker. We will use Docker primarily through the command line, but we will also use Docker Desktop to confirm things visually.
-
-### Test
-
-Check that the install worked by opening a terminal and run this command:
-
-```bash
-docker --version
-```
-You should see something similar to this (your version may be different):
-  `Docker version 20.10.13, build a224086`
-
-In addition, ensure that the Docker Desktop tool is installed and running by:
-  - Windows:
-    - find and open the system tray,
-    - click the Docker whale
-    - select Dashboard
-    - the Dashboard window should open
-  - Mac:
-    - find the Docker whale (top-right of screen),
-    - click the Docker whale
-    - select Dashboard
-    - the Dashboard window should open
-
-## Build the Project Image and Containers:
+## Install the Project Dependencies
 
 1. Open the downloaded project folder (where this file is located) in VS Code (VSC).
 2. Open the VSC terminal: Terminal > New Window.
 3. Run the following command in the terminal:
 
-  ```bash
-  docker-compose up --build
-  ```
-4. The first time it may take a few minutes, depending on the speed of your computer and the speed of your Internet connection. If everything works, then:
-  - In the terminal window you should see two lines that say:
-    `[nodemon] starting 'node index.js'`
-    `Example app listening at http://localhost:5500`
-5. Return to or find and open the Docker dashboard:
-  - Click "Containers / Apps"
-    - an image containing the same name as the folder should exist
-    - it should be green and say "Running"
+    pnpm install
 
+4. The first time it may take a few minutes, depending on the speed of your computer and the speed of your Internet connection. This command will instruct PNPM to read the package.json file and download and install the dependencies (packages) needed for the project. It will build a "node_modules" folder storing each dependency and its dependencies. It should also create a pnpm-lock.yaml file. This file should NEVER be altered by you. It is an internal file (think of it as an inventory) that PNPM uses to keep track of everything in the project.
+
+## Start the Express Server
+
+With the packages installed you're ready to run the initial test.
+1. If the VSC terminal is still open use it. If it is closed, open it again using the same command as before.
+2. Type the following command, then press Enter:
+
+    pnpm run dev
+
+3. If the command works, you should see the message "app listening on localhost:5500" in the console.
+4. Open the package.json file.
+5. Note the "Scripts" area? There is a line with the name of "dev", which tells the nodemon package to run the server.js file.
+6. This is the command you just ran.
+7. Open the server.js file.
+8. Near the bottom you'll see two variables "Port" and "Host". The values for the variables are stored in the .env file.
+9. These variables are used when the server starts on your local machine.
+
+## Move the demo file
+
+When you installed Git and cloned the remote repository in week 1, you should have created a simple web page.
+1. Find and move that simple web page to the public folder. Be sure to note its name.
 ## Test in a browser
 
-Go to [http://localhost:5500]()
-
-You should see a welcome page for the application
-
-### What is Docker?
-
-[Docker](https://docs.docker.com/get-started/overview/) is a tool that allows you to package the environment for running your application along with the application itself.  You can accomplish this as simply as including a single file called `Dockerfile` with your project.
-
-It uses a concept it calls _containers_ which are lighter weight (require less resources) than virtual machines to create the environment for your application.  These containers are designed to be extremely _portable_ which means that you can quickly deploy them anywhere, and also scale up your app quickly by simply deploying more copies of your container.  
-
-All you need to do is define the requirements for your environment in the `Dockerfile` (for example Ubuntu 18, Node.js, etc) and every time your container is started on any machine, it will recreate exactly that environment. So you already know in advance that you will not have any issue with missing dependencies or incorrect versions.
-
-That said, it can be challenging to really demonstrate the need for Docker to those new to the development world who haven't yet experienced a lot of the problems that it solves.  
-
-
-## Useful Docker Commands
-
-List all running or active containers:
-
-```bash
-docker ps
-```
-Start a container in the background (the id can be the entire id or any part - typically the first 3 characters):
-
-```bash
-docker run -d IMAGE_ID
-```
-
-Stop a container or image (the id can be the entire id or any part - typically the first 3 characters):
-```bash
-docker stop {container}/{image} {CONTAINER_ID} / {IMAGE_ID}
-```
-
-Remove a container, image, volume or network where ID is the id of the container/image/volume or network.
-
-```bash
-docker {container}/{image}/{volume}/{network} rm ID
-```
-
-View logs of a container:
-
-```bash
-docker container logs CONTAINER_ID
-```
-
-View information about a container:
-
-```bash
-docker container inspect CONTAINER_ID
-```
-
-Open a shell inside an active container so you can run terminal commands inside of it.  
-
-```bash
-docker exec -it CONTAINER_ID /bin/sh
-```
-
-Stop a container:
-
-```bash
-docker container stop CONTAINER_ID
-```
-
-Remove all dangling/unused Docker data (cached layers, volumes no longer used, etc):
-
-```bash
-docker system prune
-```
-
-You can also use the above command with a specific type, like `docker container prune`.  
-
+1. Go to http://localhost:5500 in a browser tab. Nothing should be visible as the server has not been setup to repond to that route.
+2. Add "/filename.html" to the end of the URL (replacing filename with the name of the file you moved to the public folder).
+3. You should see that page in the browser.
